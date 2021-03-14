@@ -1,9 +1,19 @@
 package com.example.restexample.events;
 
+import junitparams.JUnitParamsRunner;
+import junitparams.Parameters;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.runner.RunWith;
+
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@RunWith(JUnitParamsRunner.class)
 class EventTest {
     @Test
     void builder(){
@@ -30,46 +40,28 @@ class EventTest {
         assertThat(event.getDescription()).isEqualTo(description);
     }
 
-    @Test
-    void testFree(){
+    @ParameterizedTest
+    @CsvSource({
+            "0, 0, true",
+            "0, 100, false",
+            "100, 0, false",
+    })
+    void testFree(int basePrice, int maxPrice, boolean isFree){
         // Given
         Event event = Event.builder()
-                .basePrice(0)
-                .maxPrice(0)
+                .basePrice(basePrice)
+                .maxPrice(maxPrice)
                 .build();
 
         // When
         event.update();
 
         // Then
-        assertThat(event.isFree()).isTrue();
-
-        // Given
-        event = Event.builder()
-                .basePrice(100)
-                .maxPrice(0)
-                .build();
-
-        // When
-        event.update();
-
-        // Then
-        assertThat(event.isFree()).isFalse();
-
-        // Given
-        event = Event.builder()
-                .basePrice(0)
-                .maxPrice(100)
-                .build();
-
-        // When
-        event.update();
-
-        // Then
-        assertThat(event.isFree()).isFalse();
+        assertThat(event.isFree()).isEqualTo(isFree);
     }
 
-    @Test
+    @ParameterizedTest
+    @MethodSource("parametersForTestOffline")
     void testOffline(){
         // Given
         Event event = Event.builder()
@@ -91,5 +83,13 @@ class EventTest {
 
         // Then
         assertThat(event.isOffline()).isFalse();
+    }
+
+    private static Stream<Arguments> parametersForTestOffline() {
+        return Stream.of(
+                Arguments.of("강남역", true),
+                Arguments.of(null, false),
+                Arguments.of("", false)
+        );
     }
 }
