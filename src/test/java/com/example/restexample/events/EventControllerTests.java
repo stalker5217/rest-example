@@ -1,15 +1,12 @@
 package com.example.restexample.events;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -39,7 +36,7 @@ public class EventControllerTests {
                 .name("Spring")
                 .description("REST API Development with Spring")
                 .beginEnrollmentDateTime(LocalDateTime.of(2018, 11, 23, 12, 0))
-                .endEventDateTime(LocalDateTime.of(2018, 11, 23, 23, 0))
+                .closeEnrollmentDateTime(LocalDateTime.of(2018, 11, 23, 23, 0))
                 .beginEventDateTime(LocalDateTime.of(2018, 11, 25, 10, 0))
                 .endEventDateTime(LocalDateTime.of(2018, 11, 25, 20, 0))
                 .basePrice(100)
@@ -68,7 +65,7 @@ public class EventControllerTests {
                 .name("Spring")
                 .description("REST API Development with Spring")
                 .beginEnrollmentDateTime(LocalDateTime.of(2018, 11, 23, 12, 0))
-                .endEventDateTime(LocalDateTime.of(2018, 11, 23, 23, 0))
+                .closeEnrollmentDateTime(LocalDateTime.of(2018, 11, 23, 23, 0))
                 .beginEventDateTime(LocalDateTime.of(2018, 11, 25, 10, 0))
                 .endEventDateTime(LocalDateTime.of(2018, 11, 25, 20, 0))
                 .basePrice(100)
@@ -96,6 +93,33 @@ public class EventControllerTests {
         this.mockMvc.perform(post("/api/events/")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(this.objectMapper.writeValueAsString(eventDto)))
+                .andExpect(status().isBadRequest())
+        ;
+    }
+
+    @Test
+    public void createEvent_Bad_Request_Wrong_Input() throws Exception {
+        Event event = Event.builder()
+                .name("Spring")
+                .description("REST API Development with Spring")
+                .beginEnrollmentDateTime(LocalDateTime.of(2018, 11, 26, 12, 0))
+                .closeEnrollmentDateTime(LocalDateTime.of(2018, 11, 23, 23, 0))
+                .beginEventDateTime(LocalDateTime.of(2018, 11, 25, 10, 0))
+                .endEventDateTime(LocalDateTime.of(2018, 11, 25, 20, 0))
+                .basePrice(100)
+                .maxPrice(200)
+                .limitOfEnrollment(100)
+                .location("강남역 D2 스타트업 팩토리")
+                .free(true)
+                .offline(false)
+                .eventStatus(EventStatus.PUBLISHED)
+                .build();
+
+        mockMvc.perform(post("/api/events/")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaTypes.HAL_JSON)
+                .content(objectMapper.writeValueAsString(event)))
+                .andDo(print())
                 .andExpect(status().isBadRequest())
         ;
     }
