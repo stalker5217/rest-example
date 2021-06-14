@@ -1,6 +1,7 @@
 package com.example.restexample.events;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.hateoas.Link;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
@@ -49,6 +50,7 @@ public class EventController {
         EventEntityModel eventRepresentationModel = new EventEntityModel(event);
         eventRepresentationModel.add(linkTo(EventController.class).withRel("query-events"));
         eventRepresentationModel.add(webMvcLinkBuilder.withRel("update-event"));
+        eventRepresentationModel.add(Link.of("/docs/index.html#resources-event-create").withRel("profile"));
 
         return ResponseEntity.created(createdUri).body(eventRepresentationModel);
     }
