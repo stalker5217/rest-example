@@ -1,6 +1,8 @@
 package com.example.restexample.events;
 
+import com.example.restexample.index.IndexController;
 import org.modelmapper.ModelMapper;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
@@ -15,6 +17,7 @@ import javax.validation.Valid;
 import java.net.URI;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Controller
 @RequestMapping(value = "/api/events", produces = MediaTypes.HAL_JSON_VALUE)
@@ -32,12 +35,12 @@ public class EventController {
     @PostMapping
     public ResponseEntity<?> createEvent(@RequestBody @Valid EventDto eventDto, Errors errors){
         if(errors.hasErrors()){
-            return ResponseEntity.badRequest().body(errors);
+            return this.badRequest(errors);
         }
 
         eventValidator.validate(eventDto, errors);
         if(errors.hasErrors()){
-            return ResponseEntity.badRequest().body(errors);
+            return this.badRequest(errors);
         }
 
         Event event = modelMapper.map(eventDto, Event.class);
@@ -53,5 +56,12 @@ public class EventController {
         eventRepresentationModel.add(Link.of("/docs/index.html#resources-event-create").withRel("profile"));
 
         return ResponseEntity.created(createdUri).body(eventRepresentationModel);
+    }
+
+    private ResponseEntity<EntityModel<Errors>> badRequest(Errors errors) {
+        EntityModel<Errors> entityModel = EntityModel.of(errors);
+        entityModel.add(linkTo(methodOn(IndexController.class).index()).withRel("index"));
+
+        return ResponseEntity.badRequest().body(entityModel);
     }
 }
