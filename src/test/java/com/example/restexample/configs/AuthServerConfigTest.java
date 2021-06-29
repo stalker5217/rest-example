@@ -1,11 +1,14 @@
 package com.example.restexample.configs;
 
 import com.example.restexample.accounts.Account;
+import com.example.restexample.accounts.AccountRepository;
 import com.example.restexample.accounts.AccountRole;
 import com.example.restexample.accounts.AccountService;
 import com.example.restexample.common.BaseControllerTest;
 import com.example.restexample.common.TestDescription;
+import com.example.restexample.events.EventRepository;
 import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Set;
@@ -19,6 +22,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class AuthServerConfigTest extends BaseControllerTest {
     @Autowired
     AccountService accountService;
+
+    @Autowired
+    EventRepository eventRepository;
+
+    @Autowired
+    AccountRepository accountRepository;
+
+
+    @BeforeEach
+    public void setUp() {
+        this.eventRepository.deleteAll();
+        this.accountRepository.deleteAll();
+    }
 
     @Test
     @TestDescription("인증 토큰을 발급 받는 테스트")
