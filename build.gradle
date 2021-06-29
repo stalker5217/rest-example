@@ -32,6 +32,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'junit:junit:4.12'
     implementation group: 'org.modelmapper', name: 'modelmapper', version: '2.3.9'
+    implementation group: 'org.springframework.security.oauth.boot', name: 'spring-security-oauth2-autoconfigure', version: '2.3.12.RELEASE'
+
     runtimeOnly group: 'org.postgresql', name: 'postgresql', version: '42.2.22'
 
     asciidoctor 'org.springframework.restdocs:spring-restdocs-asciidoctor'
