@@ -1,5 +1,6 @@
 package com.example.restexample.events;
 
+import com.example.restexample.accounts.Account;
 import lombok.*;
 import org.springframework.hateoas.RepresentationModel;
 
@@ -32,6 +33,9 @@ public class Event extends RepresentationModel<Event> {
 
     @Enumerated(EnumType.STRING)
     private EventStatus eventStatus = EventStatus.DRAFT;
+
+    @ManyToOne
+    private Account manager;
 
     public void update() {
         this.free = (basePrice == 0 && maxPrice == 0);
