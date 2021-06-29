@@ -37,8 +37,8 @@ public class AccountServiceTest {
     @Test
     public void findByUsername() {
         // Given
-        String password="song";
-        String username = "sample@sample.com";
+        String password="test";
+        String username = "test@sample.com";
         Account account = Account.builder()
                 .email(username)
                 .password(password)
@@ -57,7 +57,7 @@ public class AccountServiceTest {
     @Test
     public void findByUsernameFail() {
         // expected
-        String username = "random@email.com";
+        String username = "test@sample.com";
         expectedException.expect(UsernameNotFoundException.class);
         expectedException.expectMessage(Matchers.containsString(username));
 
