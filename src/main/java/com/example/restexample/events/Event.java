@@ -1,6 +1,8 @@
 package com.example.restexample.events;
 
 import com.example.restexample.accounts.Account;
+import com.example.restexample.accounts.AccountSerializer;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.*;
 import org.springframework.hateoas.RepresentationModel;
 
@@ -35,6 +37,7 @@ public class Event extends RepresentationModel<Event> {
     private EventStatus eventStatus = EventStatus.DRAFT;
 
     @ManyToOne
+    @JsonSerialize(using = AccountSerializer.class)
     private Account manager;
 
     public void update() {
