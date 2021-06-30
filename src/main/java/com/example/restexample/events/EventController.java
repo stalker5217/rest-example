@@ -1,7 +1,6 @@
 package com.example.restexample.events;
 
 import com.example.restexample.accounts.Account;
-import com.example.restexample.accounts.AccountAdapter;
 import com.example.restexample.accounts.CurrentUser;
 import com.example.restexample.index.IndexController;
 import org.modelmapper.ModelMapper;
@@ -14,11 +13,6 @@ import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
@@ -59,15 +53,16 @@ public class EventController {
         Event event = modelMapper.map(eventDto, Event.class);
         event.update();
         event.setManager(currentUser);
-
         Event newEvent = this.eventRepository.save(event);
+
         WebMvcLinkBuilder webMvcLinkBuilder = linkTo(EventController.class).slash(newEvent.getId());
         URI createdUri = webMvcLinkBuilder.toUri();
 
-        EventEntityModel eventRepresentationModel = new EventEntityModel(event);
+        EventEntityModel eventRepresentationModel = new EventEntityModel(newEvent);
         eventRepresentationModel.add(linkTo(EventController.class).withRel("query-events"));
         eventRepresentationModel.add(webMvcLinkBuilder.withRel("update-event"));
         eventRepresentationModel.add(Link.of("/docs/index.html#resources-events-create").withRel("profile"));
+
 
         return ResponseEntity.created(createdUri).body(eventRepresentationModel);
     }
@@ -126,7 +121,7 @@ public class EventController {
         }
 
         Event existingEvent = optionalEvent.get();
-        if (existingEvent.getManager().equals(currentUser)) {
+        if (!existingEvent.getManager().equals(currentUser)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
